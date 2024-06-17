@@ -2,6 +2,7 @@ const express = require('express');
 const path = require('path');
 const mongoose = require('mongoose');
 const methodOverride = require('method-override');
+const ejsMate = require('ejs-mate') 
 const Campground = require('./models/campground');
 
 
@@ -15,16 +16,18 @@ db.once("open", () => {
 
 const app = express();
 
-
-app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'views'))
+app.engine('ejs', ejsMate)
+app.set('view engine', 'ejs'); // to use the ejs template 
+app.set('views', path.join(__dirname, 'views')) // where to find ejs files
 
 app.use(express.urlencoded({extended: true}));
 app.use(methodOverride("_method"));
 
+// for home page
 app.get('/', (req, res) => {
     res.render('home')
 });
+
 
 app.get('/campgrounds', async (req, res) => {
     const campgrounds = await Campground.find({})
