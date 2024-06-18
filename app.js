@@ -3,8 +3,10 @@ const path = require('path');
 const mongoose = require('mongoose');
 const methodOverride = require('method-override');
 const catchAsync = require('./util/catchAsync');
+const ExpressError = require('./util/expressError')
 const ejsMate = require('ejs-mate') 
 const Campground = require('./models/campground');
+const { sourceMapsEnabled } = require('process');
 
 
 mongoose.connect('mongodb://127.0.0.1:27017/camp-vista')
@@ -38,7 +40,9 @@ app.get('/campgrounds', async (req, res) => {
 app.get('/campgrounds/new',  (req, res) => {
     res.render('campgrounds/new')
 })
+
 app.post('/campgrounds', catchAsync(async (req, res, next) => {
+    if(req.body.campground) throw new ExpressError()
     const campground = new Campground(req.body.campground)
     await campground.save()
     res.redirect(`/campgrounds/${campground._id}`)
@@ -69,8 +73,14 @@ app.delete('/campgrounds/:id', catchAsync(async (req, res) => {
     res.redirect('/campgrounds')
 }))
 
+app.all('*', (req, res, next) => {
+    next(new ExpressError('Page not found', 404))
+})
+
 app.use((err, req, res, next) => {
-    res.send('Something went wrong')
+    const { statusCode = 500} = err
+    if(!err.message) err.message = "Something went wrong"
+    res.status(statusCode).render('error', {err})    
 })
 
 app.listen(3000, () => {
