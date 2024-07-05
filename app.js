@@ -6,11 +6,13 @@ const flash = require('connect-flash');
 const methodOverride = require('method-override');
 const ExpressError = require('./util/expressError');
 const ejsMate = require('ejs-mate');
+const passport = require('passport');
+const LocalStrategy = require('passport-local');
+const User = require('./models/user');
 
-
-const campgrounds = require('./routes/campgrounds.js') 
-const reviews = require('./routes/reviews.js');
-const { Http2ServerRequest } = require('http2');
+const userRoutes = require('./routes/users')
+const campgroundRoutes = require('./routes/campgrounds') 
+const reviewRoutes = require('./routes/reviews');
 
 mongoose.connect('mongodb://127.0.0.1:27017/camp-vista', {
     // useNewUrlParser: true,
@@ -47,14 +49,31 @@ const sessionConfig = {
 app.use(session(sessionConfig))
 app.use(flash())
 
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new LocalStrategy(User.authenticate()))
+
+passport.serializeUser(User.serializeUser()) // to stort in an session
+passport.deserializeUser(User.deserializeUser()) //to remove from a session
+
+
 app.use((req, res, next) => {
-    res.locals.success = req.flash('success')
-    res.locals.error = req.flash('error')
-    next()
+    console.log(req.session)
+    res.locals.currentUser = req.user;
+    res.locals.success = req.flash('success');
+    res.locals.error = req.flash('error');
+    next();
+});
+
+app.get('/fakeUser', async (req, res) => {
+    const user = new User({email: 'hardik@gmail.com', username: 'Hardik'})
+    const newUser = await User.register(user, 'neu')
+    res.send(newUser)
 })
 
-app.use('/campgrounds', campgrounds)
-app.use('/campgrounds/:id/reviews', reviews)
+app.use('/', userRoutes)
+app.use('/campgrounds', campgroundRoutes)
+app.use('/campgrounds/:id/reviews', reviewRoutes)
 
 // for home page
 app.get('/', (req, res) => {
