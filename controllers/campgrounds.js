@@ -10,10 +10,11 @@ module.exports.newForm = (req, res) => {
 }
 
 module.exports.createCampground = async (req, res, next) => {
-    // if(req.body.campground) throw new ExpressError()
     const campground = new Campground(req.body.campground);
+    campground.images = req.files.map(f => ({url: f.path, filename: f.filename}))
     campground.author = req.user._id
     await campground.save();
+    console.log(campground)
     req.flash('success', 'Successfully created a new campground')
     res.redirect(`/campgrounds/${campground._id}`);
 }
@@ -47,6 +48,9 @@ module.exports.renderEdit = async (req, res) => {
 module.exports.updateCampground = async (req, res) => {
     const { id } = req.params;
     const campground = await Campground.findByIdAndUpdate(id, { ...req.body.campground });
+    const imgs = req.files.map(f => ({url: f.path, filename: f.filename}))
+    campground.images.push(...imgs)
+    await campground.save()
     req.flash('success','Campground updated successfully!')
     res.redirect(`/campgrounds/${campground._id}`);
 }
