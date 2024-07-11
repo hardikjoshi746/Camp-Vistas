@@ -10,9 +10,6 @@ Welcome to the Camp Vistas repository! This project is designed to provide an on
 - [Installation](#installation)
 - [Usage](#usage)
 - [Screenshots](#screenshots)
-- [Contributing](#contributing)
-- [License](#license)
-- [Contact](#contact)
 
 ## About the Project
 
@@ -75,8 +72,7 @@ To set up the project locally, follow these steps:
 
 Once the application is running, you can access it in your web browser at `http://localhost:3000`. From there, you can create an account, log in, browse camping sites, and make bookings.
 
-## Screenshots
+## Screenshot
 
-### Home Page
 ![Home Page](Home.png)
 
