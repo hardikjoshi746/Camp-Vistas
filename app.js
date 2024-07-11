@@ -18,6 +18,7 @@ const User = require('./models/user');
 const userRoutes = require('./routes/users')
 const campgroundRoutes = require('./routes/campgrounds') 
 const reviewRoutes = require('./routes/reviews');
+const mongoSantize = require('express-mongo-sanitize');
 
 mongoose.connect('mongodb://127.0.0.1:27017/camp-vista', {
     // useNewUrlParser: true,
@@ -39,6 +40,7 @@ app.set('views', path.join(__dirname, 'views')); // where to find ejs files
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
 app.use(express.static(path.join(__dirname, 'public')))
+app.use(mongoSantize())
 
 const sessionConfig = {
     secret: 'thisshouldbeabettersecret!',
@@ -63,7 +65,7 @@ passport.deserializeUser(User.deserializeUser()) //to remove from a session
 
 
 app.use((req, res, next) => {
-    console.log(req.session)
+    console.log(req.query)
     res.locals.currentUser = req.user;
     res.locals.success = req.flash('success');
     res.locals.error = req.flash('error');
