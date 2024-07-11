@@ -1,4 +1,4 @@
-node_modules/
+node_modules
 .env
 
 
@@ -7,17 +7,3 @@ node_modules/
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-                                [ Read 1 line ]
-^G Help      ^O Write Out ^W Where Is  ^K Cut       ^T Execute   ^C Location
-X Exit      ^R Read File ^\ Replace   ^U Paste     ^J Justify   ^/ Go To Line
